@@ -19,6 +19,22 @@ public class HuffmanNode implements Comparable<HuffmanNode> {
 	}
 	
 	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.character);
+		sb.append("\n");
+		if (this.left != null) {
+			sb.append(this.left.toString());
+			sb.append("\n");
+		}
+		if (this.right != null) {
+			sb.append(this.right.toString());
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+	
+	@Override
 	public int compareTo(HuffmanNode other) {
 		return this.frequency - other.frequency;
 	}
