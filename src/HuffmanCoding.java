@@ -1,3 +1,6 @@
+import java.util.PriorityQueue;
+import java.util.Queue;
+
 /**
  * A new instance of HuffmanCoding is created for every run. The constructor is
  * passed the full text to be encoded or decoded, so this is a good place to
@@ -9,7 +12,7 @@ public class HuffmanCoding {
 	 * This would be a good place to compute and store the tree.
 	 */
 	public HuffmanCoding(String text) {
-		// TODO fill this in.
+		
 	}
 
 	/**
@@ -18,8 +21,36 @@ public class HuffmanCoding {
 	 * only 1 and 0.
 	 */
 	public String encode(String text) {
-		// TODO fill this in.
-		return "";
+		int[] freq = new int[256];
+		char[] chars = text.toCharArray();
+		
+		for (char c : chars) {
+			freq[c]++;
+		}
+		
+		Queue<HuffmanNode> queue = new PriorityQueue<>((o1,o2)->-o1.compareTo(o2));
+		
+		for (int i = 0; i<freq.length; i++) {
+			queue.add(new HuffmanNode((char) i, freq[i], null, null));
+		}
+		
+		while (queue.size() > 1) {
+			HuffmanNode a = queue.poll();
+			HuffmanNode b = queue.poll();
+			
+			HuffmanNode c = new HuffmanNode('\0', a.frequency + b.frequency, a, b);
+			queue.add(c);
+		}
+		HuffmanNode root = queue.poll();
+		
+		String[] table = buildTable(root);
+		
+		StringBuilder sb = new StringBuilder();
+		for (char c : chars) {
+			sb.append(table[c]);
+		}
+		
+		return sb.toString();
 	}
 
 	/**
@@ -40,4 +71,18 @@ public class HuffmanCoding {
 	public String getInformation() {
 		return "";
 	}
+	
+    private static String[] buildTable(HuffmanNode root){
+        String[] st = new String[256];
+        buildTable(st,root,"");
+        return st;
+    }
+    private static void buildTable(String st[], HuffmanNode x, String s){
+        if(x.isLeaf()){
+            st[x.character] = s;
+            return;
+        }
+        buildTable(st,x.left, s + '0');
+        buildTable(st,x.right, s + '1');
+    }
 }
