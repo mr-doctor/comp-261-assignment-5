@@ -14,20 +14,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.Border;
 
 /**
@@ -52,6 +39,8 @@ public class Assignment5 {
 	// you would include it here and add another case in the onAlgorithmRun
 	// method.
 	private static final String[] ALGORITHMS = { "Huffman coding", "Lempel Ziv" };
+
+	private boolean kmp = true;
 
 	private JFrame frame;
 	private JFileChooser fileChooser;
@@ -178,23 +167,31 @@ public class Assignment5 {
 			}
 		});
 
+		JButton changeMode = new JButton("Change Searching Mode");
+		JTextField mode = new JTextField("Current: " + (kmp?"KMP":"Brute Force"));
+		mode.setHorizontalAlignment(SwingConstants.CENTER);
+		mode.setEditable(false);
+		mode.setBorder(null);
+		changeMode.addActionListener(e -> {
+			kmp = !kmp;
+			mode.setText("Current: " + (kmp?"KMP":"Brute Force"));
+		});
+
 		// next, add in the search box on the top right.
 		searchField = new JTextField(SEARCH_COLS);
 		searchField.setMaximumSize(new Dimension(0, 25));
-		searchField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String pattern = searchField.getText();
-				String text = textEditor.getText();
-				int index = new KMP(pattern, text).search(pattern, text);
+		searchField.addActionListener(e -> {
+			String pattern = searchField.getText();
+			String text = textEditor.getText();
+			int index = kmp?new KMP(pattern, text).search(pattern, text):new BrutusSearch().search(pattern, text);
 
-				if (index == -1) {
-					JOptionPane.showMessageDialog(frame, "Pattern not found.");
-				} else {
-					textEditor.requestFocus();
-					textEditor.setSelectionStart(index);
-					textEditor.setSelectionEnd(index + pattern.length());
-					textEditor.setSelectionColor(Color.YELLOW);
-				}
+			if (index == -1) {
+				JOptionPane.showMessageDialog(frame, "Pattern not found.");
+			} else {
+				textEditor.requestFocus();
+				textEditor.setSelectionStart(index);
+				textEditor.setSelectionEnd(index + pattern.length());
+				textEditor.setSelectionColor(Color.YELLOW);
 			}
 		});
 
@@ -210,6 +207,8 @@ public class Assignment5 {
 
 		// add all the components to the frame.
 		controls.add(load);
+		controls.add(changeMode);
+		controls.add(mode);
 		controls.add(Box.createHorizontalGlue());
 		controls.add(new JLabel("Search"));
 		controls.add(Box.createRigidArea(new Dimension(LAYOUT_GAP, 0)));
