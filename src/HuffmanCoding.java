@@ -1,3 +1,6 @@
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -15,29 +18,33 @@ public class HuffmanCoding {
 	 * This would be a good place to compute and store the tree.
 	 */
 	public HuffmanCoding(String text) {
-		int[] freq = new int[256];
 		char[] chars = text.toCharArray();
-
+		Map<Character, Integer> freq = new HashMap<>();
+		
 		for (char c : chars) {
-			freq[c]++;
+			if (freq.containsKey(c)) {
+				freq.replace(c, freq.get(c)+1);
+			} else {
+				freq.put(c, 1);
+			}
 		}
 
-		Queue<HuffmanNode> queue = new PriorityQueue<>((o1, o2) -> -o1.compareTo(o2));
+		MinPQ<HuffmanNode> queue = new MinPQ<>();
 
-		for (int i = 0; i < freq.length; i++) {
-			if (freq[i] > 0) {
-				queue.add(new HuffmanNode((char) i, freq[i], null, null));
+		for (Map.Entry<Character, Integer> entry : freq.entrySet()) {
+			if (entry.getValue() > 0) {
+				queue.insert(new HuffmanNode(entry.getKey(), entry.getValue(), null, null));
 			}
 		}
 
 		while (queue.size() > 1) {
-			HuffmanNode a = queue.poll();
-			HuffmanNode b = queue.poll();
+			HuffmanNode a = queue.delMin();
+			HuffmanNode b = queue.delMin();
 
 			HuffmanNode c = new HuffmanNode('\0', a.frequency + b.frequency, a, b);
-			queue.add(c);
+			queue.insert(c);
 		}
-		tree = queue.poll();
+		tree = queue.delMin();
 	}
 
 	/**
@@ -47,11 +54,11 @@ public class HuffmanCoding {
 	 */
 	public String encode(String text) {
 		char[] chars = text.toCharArray();
-		String[] table = buildTable(tree);
+		Map<Character, String> table = buildTable(tree);
 
 		StringBuilder sb = new StringBuilder();
 		for (char c : chars) {
-			sb.append(table[c]);
+			sb.append(table.get(c));
 		}
 
 		return sb.toString();
@@ -62,21 +69,21 @@ public class HuffmanCoding {
 	 * and return the decoded text as a text string.
 	 */
 	public String decode(String encoded) {
-		StringBuilder output = new StringBuilder();
 
+		StringBuilder output = new StringBuilder();
 		for (int i = 0; i < encoded.length(); i++) {
 			HuffmanNode n = tree;
-
 			while (!n.isLeaf()) {
-				boolean bit = Boolean.parseBoolean(String.valueOf(encoded.charAt(i)));
-				i = Math.min(i + 1, encoded.length() - 1);
-				if (bit) {
+				char c = encoded.charAt(i);
+				if (c == '1') {
 					n = n.right;
 				} else {
 					n = n.left;
 				}
+				i++;
 			}
 			output.append(n.character);
+			i--;
 		}
 		return output.toString();
 	}
@@ -91,18 +98,19 @@ public class HuffmanCoding {
 		return "";
 	}
 
-	private static String[] buildTable(HuffmanNode root) {
-		String[] st = new String[256];
-		buildTable(st, root, "");
-		return st;
+	private static Map<Character, String> buildTable(HuffmanNode root) {
+		Map<Character, String> strings = new HashMap<>();
+		buildTable(strings, root, "");
+		return strings;
 	}
 
-	private static void buildTable(String st[], HuffmanNode x, String s) {
+	private static void buildTable(Map<Character, String> st, HuffmanNode x, String s) {
 		if (x.isLeaf()) {
-			st[x.character] = s;
+			st.put(x.character, s);
 			return;
 		}
 		buildTable(st, x.left, s + '0');
 		buildTable(st, x.right, s + '1');
 	}
+
 }

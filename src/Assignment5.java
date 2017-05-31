@@ -109,6 +109,8 @@ public class Assignment5 {
 				// check they're the same and display user output.
 				compressionOutput
 						.append("original and decoded texts " + (text.equals(decoded) ? "" : "DO NOT ") + "match.\n");
+				compressionOutput
+						.append("output is " + ((float) (encoded.length()) / 8) / ((float) compressionInputFile.length()) * 100 + "% of original");
 				compressionOutput.append(huffman.getInformation());
 
 			} else if (algorithm.equals("Lempel Ziv")) {
