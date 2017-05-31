@@ -1,8 +1,5 @@
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 /**
  * A new instance of HuffmanCoding is created for every run. The constructor is
@@ -36,7 +33,6 @@ public class HuffmanCoding {
 				queue.insert(new HuffmanNode(entry.getKey(), entry.getValue(), null, null));
 			}
 		}
-
 		while (queue.size() > 1) {
 			HuffmanNode a = queue.delMin();
 			HuffmanNode b = queue.delMin();
@@ -45,6 +41,7 @@ public class HuffmanCoding {
 			queue.insert(c);
 		}
 		tree = queue.delMin();
+		System.out.println(tree);
 	}
 
 	/**
@@ -69,7 +66,6 @@ public class HuffmanCoding {
 	 * and return the decoded text as a text string.
 	 */
 	public String decode(String encoded) {
-
 		StringBuilder output = new StringBuilder();
 		for (int i = 0; i < encoded.length(); i++) {
 			HuffmanNode n = tree;

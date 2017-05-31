@@ -1,3 +1,5 @@
+// Custom queue taken from https://github.com/kevin-wayne/algs4/blob/master/src/main/java/edu/princeton/cs/algs4/MinPQ.java
+
 /******************************************************************************
  *  Compilation:  javac MinPQ.java
  *  Execution:    java MinPQ < input.txt
