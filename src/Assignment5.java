@@ -133,6 +133,8 @@ public class Assignment5 {
 				// check they're the same and display user output.
 				compressionOutput.append(
 						"\noriginal and decoded texts " + (text.equals(decompressed) ? "" : "DO NOT ") + "match!\n");
+				compressionOutput
+					.append("output is " + (((float) compressed.length()) / ((float) text.length())) * 100 + "% of original");
 				compressionOutput.append(lz.getInformation());
 			}
 		} catch (IOException e) {

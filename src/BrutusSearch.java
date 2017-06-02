@@ -15,7 +15,6 @@ public class BrutusSearch {
 			if (j == patternChars.length)
 				return i;
 		}
-
 		return -1;
 	}
 }
