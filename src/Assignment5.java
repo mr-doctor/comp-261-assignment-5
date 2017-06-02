@@ -89,9 +89,15 @@ public class Assignment5 {
 				String text = readFile(compressionInputFile);
 
 				// run the algorithms.
+				
 				HuffmanCoding huffman = new HuffmanCoding(text);
+				long start = System.currentTimeMillis();
 				String encoded = huffman.encode(text);
+				long endCompress = System.currentTimeMillis();
 				String decoded = huffman.decode(encoded);
+				long endDecompress = System.currentTimeMillis();
+				System.out.println("compression took " + (endCompress - start));
+				System.out.println("decompression took " + (endDecompress - endCompress));
 
 				if (!encoded.matches("[01]*"))
 					compressionOutput.append(
@@ -119,8 +125,13 @@ public class Assignment5 {
 
 				// run the algorithms.
 				LempelZiv lz = new LempelZiv();
+				long start = System.currentTimeMillis();
 				String compressed = lz.compress(text);
+				long endCompress = System.currentTimeMillis();
 				String decompressed = lz.decompress(compressed);
+				long endDecompress = System.currentTimeMillis();
+				System.out.println("compression took " + (endCompress - start));
+				System.out.println("decompression took " + (endDecompress - endCompress));
 
 				// write out the encoded text.
 				List<String> lines = Arrays.asList(compressed);
@@ -187,7 +198,10 @@ public class Assignment5 {
 		searchField.addActionListener(e -> {
 			String pattern = searchField.getText();
 			String text = textEditor.getText();
-			int index = kmp?new KMP(pattern, text).search(pattern, text):new BrutusSearch().search(pattern, text);
+			long startTime = System.currentTimeMillis();
+			int index = kmp?new KMP(pattern, text).search(pattern, text):new BruteSearch().search(pattern, text);
+			long endTime = System.currentTimeMillis();
+			System.out.println("duration = " + (endTime - startTime));
 
 			if (index == -1) {
 				JOptionPane.showMessageDialog(frame, "Pattern not found.");

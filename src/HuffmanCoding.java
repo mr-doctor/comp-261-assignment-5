@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 /**
  * A new instance of HuffmanCoding is created for every run. The constructor is
@@ -15,6 +16,7 @@ public class HuffmanCoding {
 	 * This would be a good place to compute and store the tree.
 	 */
 	public HuffmanCoding(String text) {
+		long startTree = System.currentTimeMillis();
 		char[] chars = text.toCharArray();
 		Map<Character, Integer> freq = new HashMap<>();
 		
@@ -41,6 +43,7 @@ public class HuffmanCoding {
 			queue.insert(c);
 		}
 		tree = queue.delMin();
+		System.out.println("tree build = " + (System.currentTimeMillis() - startTree));
 		System.out.println(tree);
 	}
 

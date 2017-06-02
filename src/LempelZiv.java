@@ -5,10 +5,23 @@ import java.util.Iterator;
  * A new instance of LempelZiv is created for every run.
  */
 public class LempelZiv {
-
-	private static final int VIEW_RANGE = 12;
+	
+	/**
+	 * View window used to search through the string
+	 */
+	private static final int VIEW_RANGE = 144;
+	/**
+	 * Collection of tuples
+	 */
 	private ArrayList<Tuple> encoded = new ArrayList<>();
 	
+	/**
+	 * Compresses the input String to a collection of tuples
+	 * using the Lempel Ziv algorithm.
+	 * 
+	 * @param input
+	 * @return a String of the compressed input
+	 */
 	public String compress(String input) {
 		// Initialise values as empty
 		int cursor = 0;
@@ -23,12 +36,8 @@ public class LempelZiv {
 			lookAhead = (cursor + lookAhead < input.length()) ? cursor + lookAhead : input.length();
 			matchPrevious = (cursor - VIEW_RANGE >= 0) ? cursor - VIEW_RANGE : 0;
 			
-			if (cursor == 0) {
-				// Resets the string to be empty
-				str = "";
-			} else {
-				str = input.substring(matchPrevious, cursor);
-			}
+			str = (cursor == 0) ? "" : input.substring(matchPrevious, cursor);
+			
 			matchLength = 1;
 			// Search for next character to match
 			String target = input.substring(cursor, cursor + matchLength);
@@ -36,6 +45,10 @@ public class LempelZiv {
 			if (str.contains(target)) {
 				matchLength++;
 				while (matchLength <= lookAhead) {
+					if (cursor + matchLength >= input.length() - 1) {
+						matchLength = 1;
+						break;
+					}
 					// Get next match
 					target = input.substring(cursor, cursor + matchLength);
 					matchLocation = str.indexOf(target);
@@ -62,15 +75,23 @@ public class LempelZiv {
 			}
 			cursor++;
 		}
+		// Create a String of the encoded tuples
 		StringBuilder output = new StringBuilder();
 		for (Tuple currentTuple : encoded) {
-			output.append(currentTuple.toString()).append("\n");
+			output.append(currentTuple.toString());
 		}
 		return output.toString();
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param tags
+	 * @return
+	 */
 	public String decompress(String tags) {
 		StringBuilder output = new StringBuilder();
+		// Check every tuple
 		for (Tuple currentTuple : encoded) {
 			if (currentTuple.length == 0) {
 				output.append(currentTuple.next);
@@ -95,6 +116,12 @@ public class LempelZiv {
 	}
 }
 
+/**
+ * A tuple object that contains the data of the string, offset, and length.
+ * 
+ * @author Daniel
+ *
+ */
 class Tuple {
 	public final int offset;
 	public final int length;
@@ -108,7 +135,7 @@ class Tuple {
 
 	@Override
 	public String toString() {
-		return "[" + offset + "," + length + "," + next + "]";
+		return "" + offset + length + next;
 	}
 
 }

@@ -1,5 +1,5 @@
 
-public class BrutusSearch {
+public class BruteSearch {
 
 	public int search(String pattern, String text) {
 		char[] textChars = text.toCharArray();
