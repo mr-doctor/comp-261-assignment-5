@@ -26,15 +26,15 @@ public class HuffmanNode implements Comparable<HuffmanNode> {
 		return sb.toString();
 	}
 
-	private String print(String prefix, boolean isTail) {
+	private String print(String prefix, boolean isLeaf) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(prefix + (isTail ? "`-- " : "|-- ") + (character == '\0' ? "." : boxChar()) + "\n");
+		sb.append(prefix).append(isLeaf ? "`-- " : "|-- ").append(character == '\0' ? "." : boxChar()).append("\n");
 		if (left != null) {
-			sb.append(left.print(prefix + (isTail ? "    " : "|    "), false));
+			sb.append(left.print(prefix + (isLeaf ? "    " : "|    "), false));
 		}
 
 		if (right != null) {
-			sb.append(right.print(prefix + (isTail ? "    " : "|    "), true));
+			sb.append(right.print(prefix + (isLeaf ? "    " : "|    "), true));
 		}
 		return sb.toString();
 	}

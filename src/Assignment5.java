@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -126,9 +127,14 @@ public class Assignment5 {
 				// run the algorithms.
 				LempelZiv lz = new LempelZiv();
 				long start = System.currentTimeMillis();
-				String compressed = lz.compress(text);
+				
+				ArrayList<Tuple> compressedList = lz.compress(text);
+				String compressed = lz.convertCompressedToString(compressedList);
+				
 				long endCompress = System.currentTimeMillis();
-				String decompressed = lz.decompress(compressed);
+				
+				String decompressed = lz.decompress(compressedList);
+				
 				long endDecompress = System.currentTimeMillis();
 				System.out.println("compression took " + (endCompress - start));
 				System.out.println("decompression took " + (endDecompress - endCompress));

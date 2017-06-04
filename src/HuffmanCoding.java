@@ -27,7 +27,8 @@ public class HuffmanCoding {
 				freq.put(c, 1);
 			}
 		}
-
+		
+		// Custom queue used from https://github.com/kevin-wayne/algs4/blob/master/src/main/java/edu/princeton/cs/algs4/MinPQ.java
 		MinPQ<HuffmanNode> queue = new MinPQ<>();
 
 		for (Map.Entry<Character, Integer> entry : freq.entrySet()) {

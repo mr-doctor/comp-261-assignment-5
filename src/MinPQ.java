@@ -1,5 +1,5 @@
 // Custom queue taken from https://github.com/kevin-wayne/algs4/blob/master/src/main/java/edu/princeton/cs/algs4/MinPQ.java
-// This is NOT my code.
+// This is NOT my code. It is not required to complete the algorithm, but it provides better compression.
 
 /******************************************************************************
  *  Compilation:  javac MinPQ.java

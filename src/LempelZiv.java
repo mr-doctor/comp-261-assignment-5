@@ -1,105 +1,91 @@
+// All of this code is my own, but
+// some of the logic was from https://github.com/rongjiwang/Algorithms-and-Data-Structures/blob/master/StringSearchAndCompression/src/LempelZiv.java
 import java.util.ArrayList;
-import java.util.Iterator;
 
-/**
- * A new instance of LempelZiv is created for every run.
- */
 public class LempelZiv {
-	
+
 	/**
-	 * View window used to search through the string
+	 * View window used to search through the string. Arbitrary value chosen.
 	 */
 	private static final int VIEW_RANGE = 144;
-	/**
-	 * Collection of tuples
-	 */
-	private ArrayList<Tuple> encoded = new ArrayList<>();
-	
-	/**
-	 * Compresses the input String to a collection of tuples
-	 * using the Lempel Ziv algorithm.
-	 * 
-	 * @param input
-	 * @return a String of the compressed input
-	 */
-	public String compress(String input) {
+
+	public ArrayList<Tuple> compress(String text) {
 		// Initialise values as empty
 		int cursor = 0;
-		int matchPrevious = 0;
 		int lookAhead = 0;
-		int matchLength = 0;
-		int matchLocation = 0;
-		String str = "";
-		
-		while (cursor < input.length()) {
+		ArrayList<Tuple> textCompressed = new ArrayList<>();
+
+		while (cursor < text.length()) {
 			// Clamp values to 0 and the input length, respectively
-			lookAhead = (cursor + lookAhead < input.length()) ? cursor + lookAhead : input.length();
-			matchPrevious = (cursor - VIEW_RANGE >= 0) ? cursor - VIEW_RANGE : 0;
-			
-			str = (cursor == 0) ? "" : input.substring(matchPrevious, cursor);
-			
-			matchLength = 1;
+			lookAhead = (cursor + lookAhead >= text.length()) ? text.length() : cursor + lookAhead;
+			int matchPrevious = (cursor - VIEW_RANGE < 0) ? 0 : cursor - VIEW_RANGE;
+			int matchLength = 1;
+			int matchLocation = 0;
+			String str = (cursor == 0) ? "" : text.substring(matchPrevious, cursor);
+
 			// Search for next character to match
-			String target = input.substring(cursor, cursor + matchLength);
+			String next = text.substring(cursor, cursor + matchLength);
 			// If match is found
-			if (str.contains(target)) {
+			if (str.contains(next)) {
 				matchLength++;
 				while (matchLength <= lookAhead) {
-					if (cursor + matchLength >= input.length() - 1) {
+					if (cursor + matchLength >= text.length() - 1) {
 						matchLength = 1;
 						break;
 					}
 					// Get next match
-					target = input.substring(cursor, cursor + matchLength);
-					matchLocation = str.indexOf(target);
+					next = text.substring(cursor, cursor + matchLength);
+					matchLocation = str.indexOf(next);
 					// Increment if within bounds, otherwise break
-					if (matchLocation != -1 && (cursor + matchLength) < input.length()) {
+					if (cursor + matchLength < text.length() && matchLocation > -1) {
 						matchLength++;
 					} else {
 						break;
 					}
 				}
 				matchLength--;
-				matchLocation = str.indexOf(input.substring(cursor, cursor + matchLength));
+				matchLocation = str.indexOf(text.substring(cursor, cursor + matchLength));
+				// Move along to the next match
 				cursor += matchLength;
+
+				char c = text.charAt(cursor);
+
 				// Sets the distance back to the match location
-				int offsetValue = (cursor < (VIEW_RANGE + matchLength)) 
-						? cursor - matchLocation - matchLength
-						: VIEW_RANGE - matchLocation;
-				String nextChar = input.substring(cursor, cursor + 1);
-				encoded.add(new Tuple(offsetValue, matchLength, nextChar));
+				int offsetValue = VIEW_RANGE - matchLocation;
+				if ((VIEW_RANGE + matchLength) >= cursor) {
+					offsetValue = cursor - matchLocation - matchLength;
+				}
+				textCompressed.add(new Tuple(offsetValue, matchLength, c));
 			} else {
 				// Create new tuple, since no match was found
-				String nextChar = input.substring(cursor, cursor + 1);
-				encoded.add(new Tuple(0, 0, nextChar));
+				char c = text.charAt(cursor);
+				textCompressed.add(new Tuple(0, 0, c));
 			}
 			cursor++;
 		}
+		return textCompressed;
+	}
+
+	public String convertCompressedToString(ArrayList<Tuple> compressed) {
 		// Create a String of the encoded tuples
 		StringBuilder output = new StringBuilder();
-		for (Tuple currentTuple : encoded) {
-			output.append(currentTuple.toString());
+		for (Tuple currentTuple : compressed) {
+			output.append(currentTuple.tupleString());
 		}
 		return output.toString();
 	}
 
-	/**
-	 * 
-	 * 
-	 * @param tags
-	 * @return
-	 */
-	public String decompress(String tags) {
+	public String decompress(ArrayList<Tuple> compressed) {
 		StringBuilder output = new StringBuilder();
 		// Check every tuple
-		for (Tuple currentTuple : encoded) {
+		for (Tuple currentTuple : compressed) {
 			if (currentTuple.length == 0) {
-				output.append(currentTuple.next);
+				output.append(currentTuple.character);
 			} else {
 				for (int i = 0; i < currentTuple.length; i++) {
 					output.append(output.charAt(output.length() - currentTuple.offset));
 				}
-				output.append(currentTuple.next);
+				output.append(currentTuple.character);
 			}
 		}
 		return output.toString();
@@ -114,28 +100,4 @@ public class LempelZiv {
 	public String getInformation() {
 		return "";
 	}
-}
-
-/**
- * A tuple object that contains the data of the string, offset, and length.
- * 
- * @author Daniel
- *
- */
-class Tuple {
-	public final int offset;
-	public final int length;
-	public final String next;
-
-	Tuple(int offset, int length, String next) {
-		this.offset = offset;
-		this.length = length;
-		this.next = next;
-	}
-
-	@Override
-	public String toString() {
-		return "" + offset + length + next;
-	}
-
 }
