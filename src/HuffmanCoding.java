@@ -112,5 +112,4 @@ public class HuffmanCoding {
 		buildTable(st, x.left, s + '0');
 		buildTable(st, x.right, s + '1');
 	}
-
 }
