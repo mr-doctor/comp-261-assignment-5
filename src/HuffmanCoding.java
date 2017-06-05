@@ -1,6 +1,5 @@
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 /**
  * A new instance of HuffmanCoding is created for every run. The constructor is
@@ -46,6 +45,9 @@ public class HuffmanCoding {
 		tree = queue.delMin();
 		System.out.println("tree build = " + (System.currentTimeMillis() - startTree));
 		System.out.println(tree);
+        for (Map.Entry<Character, Integer> entry : freq.entrySet()) {
+            System.out.println(entry.getKey()+" : "+entry.getValue());
+        }
 	}
 
 	/**
