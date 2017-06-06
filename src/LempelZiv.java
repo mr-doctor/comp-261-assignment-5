@@ -1,5 +1,4 @@
-// All of this code is my own, but
-// some of the logic was from https://github.com/rongjiwang/Algorithms-and-Data-Structures/blob/master/StringSearchAndCompression/src/LempelZiv.java
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class LempelZiv {
@@ -7,9 +6,9 @@ public class LempelZiv {
 	/**
 	 * View window used to search through the string. Arbitrary value chosen.
 	 */
-	private static final int VIEW_RANGE = 144;
+	private static final int VIEW_RANGE = 10240;
 
-	public ArrayList<Tuple> compress(String text) {
+	public byte[] compress(String text) {
 		// Initialise values as empty
 		int cursor = 0;
 		int lookAhead = 0;
@@ -47,11 +46,12 @@ public class LempelZiv {
 				matchLocation = str.indexOf(text.substring(cursor, cursor + matchLength));
 				// Move along to the next match
 				cursor += matchLength;
-
+				
 				char c = text.charAt(cursor);
 
 				// Sets the distance back to the match location
 				int offsetValue = VIEW_RANGE - matchLocation;
+				
 				if ((VIEW_RANGE + matchLength) >= cursor) {
 					offsetValue = cursor - matchLocation - matchLength;
 				}
@@ -63,19 +63,29 @@ public class LempelZiv {
 			}
 			cursor++;
 		}
-		return textCompressed;
+		return tuplesToByteArray(textCompressed);
 	}
 
-	public String convertCompressedToString(ArrayList<Tuple> compressed) {
-		// Create a String of the encoded tuples
-		StringBuilder output = new StringBuilder();
+	public byte[] tuplesToByteArray(ArrayList<Tuple> compressed) {
+		// Allocate 4 bits for offset, 4 for length, 2 for Unicode character
+		ByteBuffer b = ByteBuffer.allocate((4 + 4 + 2) * compressed.size());
 		for (Tuple currentTuple : compressed) {
-			output.append(currentTuple.tupleString());
+			currentTuple.addTo(b);
 		}
-		return output.toString();
+		return b.array();
 	}
 
-	public String decompress(ArrayList<Tuple> compressed) {
+	public String decompress(byte[] compressedString) {
+		ArrayList<Tuple> compressed = new ArrayList<>();
+		ByteBuffer bytes = ByteBuffer.wrap(compressedString);
+		// Convert the byte array to tuples
+		while (bytes.remaining() > 0){
+			int a = bytes.getInt();
+			int b = bytes.getInt();
+			char c = bytes.getChar();
+			compressed.add(new Tuple(a, b, c));
+		}
+		
 		StringBuilder output = new StringBuilder();
 		// Check every tuple
 		for (Tuple currentTuple : compressed) {
@@ -88,6 +98,7 @@ public class LempelZiv {
 				output.append(currentTuple.character);
 			}
 		}
+		
 		return output.toString();
 	}
 

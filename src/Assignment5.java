@@ -93,31 +93,27 @@ public class Assignment5 {
 				
 				HuffmanCoding huffman = new HuffmanCoding(text);
 				long start = System.currentTimeMillis();
-				String encoded = huffman.encode(text);
+				byte[] encoded = huffman.encode(text);
 				long endCompress = System.currentTimeMillis();
 				String decoded = huffman.decode(encoded);
 				long endDecompress = System.currentTimeMillis();
 				System.out.println("compression took " + (endCompress - start));
 				System.out.println("decompression took " + (endDecompress - endCompress));
-
-				if (!encoded.matches("[01]*"))
-					compressionOutput.append(
-							"ERROR: encoded string contains characters that are not 0 or 1. this is an invalid huffman encoding.\n\n");
+				
+				// I altered this code to use a binary array. It functions identically, but instead compresses the file better.
 
 				// write out the encoded text.
-				List<String> lines = Arrays.asList(encoded);
-				Files.write(compressionOutputFile.toPath(), lines, CHARSET);
+				Files.write(compressionOutputFile.toPath(), encoded);
 
 				// figure out file sizes. the encoded string represents bits,
-				// so we divide it by 8 to get the size in bytes.
 				compressionOutput.append("input length:  " + compressionInputFile.length() + " bytes \n");
-				compressionOutput.append("output length: " + encoded.length() / 8 + " bytes \n\n");
+				compressionOutput.append("output length: " + encoded.length + " bytes \n\n");
 
 				// check they're the same and display user output.
 				compressionOutput
 						.append("original and decoded texts " + (text.equals(decoded) ? "" : "DO NOT ") + "match.\n");
 				compressionOutput
-						.append("output is " + ((float) (encoded.length()) / 8) / ((float) compressionInputFile.length()) * 100 + "% of original");
+						.append("output is " + ((float) (encoded.length) / ((float) compressionInputFile.length())) * 100 + "% of original");
 				compressionOutput.append(huffman.getInformation());
 
 			} else if (algorithm.equals("Lempel Ziv")) {
@@ -128,30 +124,28 @@ public class Assignment5 {
 				LempelZiv lz = new LempelZiv();
 				long start = System.currentTimeMillis();
 				
-				ArrayList<Tuple> compressedList = lz.compress(text);
-				String compressed = lz.convertCompressedToString(compressedList);
-				
+				byte[] compressed = lz.compress(text);
 				long endCompress = System.currentTimeMillis();
-				
-				String decompressed = lz.decompress(compressedList);
+				String decompressed = lz.decompress(compressed);
 				
 				long endDecompress = System.currentTimeMillis();
 				System.out.println("compression took " + (endCompress - start));
 				System.out.println("decompression took " + (endDecompress - endCompress));
+				
+				// I altered this code to use a binary array. It functions identically, but instead compresses the file better.
 
 				// write out the encoded text.
-				List<String> lines = Arrays.asList(compressed);
-				Files.write(compressionOutputFile.toPath(), lines, CHARSET);
+				Files.write(compressionOutputFile.toPath(), compressed);
 
 				// figure out file sizes, in characters this time.
 				compressionOutput.append("input length:  " + text.length() + " characters \n");
-				compressionOutput.append("output length: " + compressed.length() + " characters \n");
+				compressionOutput.append("output length: " + compressed.length + " characters \n");
 
 				// check they're the same and display user output.
 				compressionOutput.append(
 						"\noriginal and decoded texts " + (text.equals(decompressed) ? "" : "DO NOT ") + "match!\n");
 				compressionOutput
-					.append("output is " + (((float) compressed.length()) / ((float) text.length())) * 100 + "% of original");
+					.append("output is " + (((float) compressed.length) / ((float) text.length())) * 100 + "% of original");
 				compressionOutput.append(lz.getInformation());
 			}
 		} catch (IOException e) {

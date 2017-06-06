@@ -1,3 +1,5 @@
+import java.nio.ByteBuffer;
+
 /**
  * A tuple object that contains the data of the string, offset, and length.
  * 
@@ -15,7 +17,14 @@ class Tuple {
 		this.character = character;
 	}
 
-	public String tupleString() {
-		return "" + offset + length + character;
+	public void addTo(ByteBuffer b) {
+		b.putInt(offset);
+		b.putInt(length);
+		b.putChar(character);
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("(%d, %d, %c)", offset, length, character);
 	}
 }

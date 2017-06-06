@@ -1,3 +1,5 @@
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,28 +57,66 @@ public class HuffmanCoding {
 	 * return the encoded text as a binary string, that is, a string containing
 	 * only 1 and 0.
 	 */
-	public String encode(String text) {
+	public byte[] encode(String text) {
 		char[] chars = text.toCharArray();
 		Map<Character, String> table = buildTable(tree);
 
-		StringBuilder sb = new StringBuilder();
+		StringBuilder bitString = new StringBuilder();
 		for (char c : chars) {
-			sb.append(table.get(c));
+			bitString.append(table.get(c));
 		}
-
-		return sb.toString();
+		
+		// Allocate 4 bits for the length, 1/8 bits for each byte, + 1 for remainder
+		ByteBuffer b = ByteBuffer.allocate(4 + bitString.length() / 8 + 1);
+		b.putInt(bitString.length());
+		byte[] backingArray = b.array();
+		
+		// Go over every bit, and encode it to a byte
+		for (int pos = 0; pos < bitString.length(); pos++){
+			// Every 8 bits, increment bytes by 1 and reset bits to 0
+			int byteIndex = pos / 8;
+			int bitIndex = pos % 8;
+			
+			// Edit the bit at the index
+			if (bitString.charAt(pos) == '1'){
+				backingArray[byteIndex + 4] |= 1 << bitIndex;
+			}
+		}
+		
+		return backingArray;
 	}
 
 	/**
-	 * Take encoded input as a binary string, decode it using the stored tree,
+	 * Take encoded input as a binary array, decode it using the stored tree,
 	 * and return the decoded text as a text string.
 	 */
-	public String decode(String encoded) {
+	public String decode(byte[] encoded) {
+		ByteBuffer bytes = ByteBuffer.wrap(encoded);
+		int length = bytes.getInt();
+		
+		StringBuilder bitString = new StringBuilder();
+		// Converts the encoded array of bytes to a string of bits
+		for (int pos = 0; pos < length; pos++){
+			int byteIndex = pos / 8;
+			int bitIndex = pos % 8;
+			
+			// Selects the bit to be parsed using an AND mask
+			int mask = 1 << bitIndex;
+			// Isolates the bit
+			boolean bit = (encoded[byteIndex + 4] & mask) != 0;
+			// Check the bit and write accordingly
+			if (bit){
+				bitString.append('1');
+			} else {
+				bitString.append('0');
+			}
+		}
+		
 		StringBuilder output = new StringBuilder();
-		for (int i = 0; i < encoded.length(); i++) {
+		for (int i = 0; i < bitString.length(); i++) {
 			HuffmanNode n = tree;
 			while (!n.isLeaf()) {
-				char c = encoded.charAt(i);
+				char c = bitString.charAt(i);
 				if (c == '1') {
 					n = n.right;
 				} else {
